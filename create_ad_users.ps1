@@ -8,7 +8,6 @@ foreach ($user in $users){
     $username = $username.ToLower()
     echo $username
     echo "-----"
-    $username = Translit($username)
     echo $username
 }
 
