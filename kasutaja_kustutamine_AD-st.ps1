@@ -25,7 +25,7 @@ function Translit {
        param(
         [string] $inputString
     )
-    #define the characters which have to be translated
+    #Defineerime kuidas tahti konvertida
         $Translit = @{
         [char]'ä' = "a"
         [char]'õ' = "o"
