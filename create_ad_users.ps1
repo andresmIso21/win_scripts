@@ -1,37 +1,57 @@
-ï»¿#AD faili asukoht
+#Anname asukoha kus asub fail kasutajate andmetega
 $file = "C:\Users\Administrator\Documents\win_scripts\adusers.csv"
-#To faili sisu sisse
+#Toome faili sisu sisse
 $users = Import-Csv $file -Encoding Default -Delimiter ";"
-#for each user data row in file
+#igale reale failis
 foreach ($user in $users){
     $username = $user.Firstname + "." + $user.LastName
     $username = $username.ToLower()
-    echo $username
-    echo "-----"
-    echo $username
+    $username = Translit($username)
+    $upname = $username + "@sv-kool.local"
+    $displayname = $user.Firstname + " " + $user.LastName
+    if (Get-ADUser -F {SamAccountName -eq $username})
+        {
+
+            Write-Warning "Kasutaja $username kontot ei saanud luua kuna see juba eksisteerib."
+
+        }
+        else
+        {
+        New-ADUser -Name $username `
+        -DisplayName $displayname
+        -GivenName $user.FirstName
+        -Title $user.Role`
+        -Surname $user.LastName`
+        -Department $user.Department`
+        -UserPrincipalName $upname`
+        -AccountPassword (ConvertTo-SecureString $user.Password -AsPlainText -force) -Enabled $true
+        echo "Uue kasutaja $username konto lisatud edukalt!"
+        }
+
 }
 
-#function translit UTF-8 characters to LATIN
+#funktioon translit UTF-8 tahed ladina tahtedeks
 Function Translit {
-    #function use as parameter string to translit
-    param(
+       param(
         [string] $inputString
     )
     #define the characters which have to be translated
-    $Translit = @{
-    [char]'a' = "e"
-    }
-
-    $outputString = ""
-    foreach ($character in $inputCharacter = $inputString.ToCharArray())
-    {
-        if ($Translit[$character] -cne $Null ){
-            $outputString = $outputString + $Translit[$character]
-                    } else {
-            $outputString = $outputString + $character
+        $Translit = @{
+        [char]'ä' = "a"
+        [char]'õ' = "o"
+        [char]'ü' = "u"
+        [char]'ö' = "o"
         }
-    }
-    
-    #$outputString = $inputString.ToCharArray()
-    #Write-Output $outputString
-    }
+
+        $outputString = ""
+        foreach ($character in $inputCharacter = $inputString.ToCharArray())
+    {
+        if ($Translit[$character] -cne $Null){
+        $outputString +=$Translit[$character]
+        }else {
+            $outputString += $character
+            }
+            }
+            Write-Output $outputString
+            }    
+        
