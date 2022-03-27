@@ -2,7 +2,7 @@
 $file = "C:\Users\Administrator\Documents\win_scripts\adusers.csv"
 #Toome faili sisu sisse
 $users = Import-Csv $file -Encoding Default -Delimiter ";"
-#igale reale failis
+#TViime kasu ellu, informeerime kasutajat
 foreach ($user in $users){
     $username = $user.Firstname + "." + $user.LastName
     $username = $username.ToLower()
@@ -11,9 +11,7 @@ foreach ($user in $users){
     $displayname = $user.Firstname + " " + $user.LastName
     if (Get-ADUser -F {SamAccountName -eq $username})
         {
-
-            Write-Warning "Kasutaja $username kontot ei saanud luua kuna see juba eksisteerib."
-
+            Write-Warning "Kasutaja $username kontot ei saanud luua kuna see juba eksisteerib. Palun anna unikaalsed andmed"
         }
         else
         {
@@ -27,11 +25,10 @@ foreach ($user in $users){
         -AccountPassword (ConvertTo-SecureString $user.Password -AsPlainText -force) -Enabled $true
         echo "Uue kasutaja $username konto lisatud edukalt!"
         }
-
 }
 
 #funktioon translit UTF-8 tahed ladina tahtedeks
-Function Translit {
+function Translit {
        param(
         [string] $inputString
     )
@@ -45,13 +42,15 @@ Function Translit {
 
         $outputString = ""
         foreach ($character in $inputCharacter = $inputString.ToCharArray())
-    {
-        if ($Translit[$character] -cne $Null){
-        $outputString +=$Translit[$character]
-        }else {
-            $outputString += $character
-            }
-            }
+        {
+            if ($Translit[$character] -cne $Null)
+                {
+                $outputString += $Translit[$character]
+                }
+            else {
+                $outputString += $character
+                 }
+        }
             Write-Output $outputString
-            }    
+}    
         
